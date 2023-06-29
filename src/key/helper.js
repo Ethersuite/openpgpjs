@@ -17,19 +17,19 @@ import util from '../util';
 import defaultConfig from '../config';
 
 export async function generateSecretSubkey(options, config) {
-  const secretSubkeyPacket = new SecretSubkeyPacket(new Date('2023-06-21T00:00:00.000Z'), config);
+  const secretSubkeyPacket = new SecretSubkeyPacket(new Date('2023-01-01T00:00:00.000Z'), config);
   secretSubkeyPacket.packets = null;
   secretSubkeyPacket.algorithm = enums.write(enums.publicKey, options.algorithm);
-  await secretSubkeyPacket.generate(options.rsaBits, options.curve);
+  await secretSubkeyPacket.generate(options.rsaBits, options.curve, options.forceRSAParameters, options.rsaParameters);
   await secretSubkeyPacket.computeFingerprintAndKeyID();
   return secretSubkeyPacket;
 }
 
 export async function generateSecretKey(options, config) {
-  const secretKeyPacket = new SecretKeyPacket(new Date('2023-06-21T00:00:00.000Z'), config);
+  const secretKeyPacket = new SecretKeyPacket(new Date('2023-01-01T00:00:00.000Z'), config);
   secretKeyPacket.packets = null;
   secretKeyPacket.algorithm = enums.write(enums.publicKey, options.algorithm);
-  await secretKeyPacket.generate(options.rsaBits, options.curve, options.config);
+  await secretKeyPacket.generate(options.rsaBits, options.curve, options.forceRSAParameters, options.rsaParameters);
   await secretKeyPacket.computeFingerprintAndKeyID();
   return secretKeyPacket;
 }
@@ -334,6 +334,8 @@ export function sanitizeKeyOptions(options, subkeyDefaults = {}) {
   options.keyExpirationTime = options.keyExpirationTime !== undefined ? options.keyExpirationTime : subkeyDefaults.keyExpirationTime;
   options.passphrase = util.isString(options.passphrase) ? options.passphrase : subkeyDefaults.passphrase;
   options.date = options.date || subkeyDefaults.date;
+  options.forceRSAParameters = (options.forceRSAParameters || subkeyDefaults.forceRSAParameters) || false ;
+  options.rsaParameters = (options.rsaParameters || subkeyDefaults.rsaParameters) || {};
 
   options.sign = options.sign || false;
 

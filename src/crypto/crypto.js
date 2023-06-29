@@ -272,47 +272,44 @@ function bigintToUint8Array(bigintValue) {
   return uint8Array;
 }
 
-export function setRSAParameters(privateKey, publicKey){
-  this.rsaKeyPair = {
-    privateKey,
-    publicKey
-  };
-}
 
 /**
  * Generate algorithm-specific key parameters
  * @param {module:enums.publicKey} algo - The public key algorithm
  * @param {Integer} bits - Bit length for RSA keys
  * @param {module:type/oid} oid - Object identifier for ECC keys
- * @param {boolean} forceRSAParameters - Force passing the rsa parameters
+ * @param {boolean} forceRSAParameters - Force RSA Parameters
+ * @param {object} rsaParameters - RSA Parameters
  * @returns {Promise<{ publicParams: {Object}, privateParams: {Object} }>} The parameters referenced by name.
  * @async
  */
-export function generateParams(algo, bits, oid, forceRSAParameters = false) {
+export function generateParams(algo, bits, oid, forceRSAParameters = false, rsaParameters = {}) {
   switch (algo) {
     case enums.publicKey.rsaEncrypt:
     case enums.publicKey.rsaEncryptSign:
     case enums.publicKey.rsaSign: {
 
-      if(forceRSAParameters && this.rsaKeyPair) {
+      if (forceRSAParameters && rsaParameters) {
         return {
           privateParams: {
-            d: bigintToUint8Array(this.rsaKeyPair.privateKey.d),
-            p: bigintToUint8Array(this.rsaKeyPair.privateKey.p),
-            q: bigintToUint8Array(this.rsaKeyPair.privateKey.q),
-            u: bigintToUint8Array(this.rsaKeyPair.privateKey.qInv)
+            d: bigintToUint8Array(rsaParameters.privateKey.d),
+            p: bigintToUint8Array(rsaParameters.privateKey.p),
+            q: bigintToUint8Array(rsaParameters.privateKey.q),
+            u: bigintToUint8Array(rsaParameters.privateKey.qInv)
           },
           publicParams: {
-            n: bigintToUint8Array(this.rsaKeyPair.publicKey.n),
-            e: bigintToUint8Array(this.rsaKeyPair.publicKey.e),
+            n: bigintToUint8Array(rsaParameters.publicKey.n),
+            e: bigintToUint8Array(rsaParameters.publicKey.e)
           }
-        }
+        };
       }
 
-      return publicKey.rsa.generate(bits, 65537).then(({ n, e, d, p, q, u }) => ({
+      return publicKey.rsa.generate(bits, 65537).then(({ n, e, d, p, q, u }) => {
+      return {
         privateParams: { d, p, q, u },
         publicParams: { n, e }
-      }));
+      }
+    });
     }
     case enums.publicKey.ecdsa:
       return publicKey.elliptic.generate(oid).then(({ oid, Q, secret }) => ({
