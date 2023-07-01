@@ -189,7 +189,6 @@ export class Message {
     } else if (decryptionKeys) {
       const pkeskPackets = this.packets.filterByTag(enums.packet.publicKeyEncryptedSessionKey);
 
-      console.log('decryptionKEYSSs',pkeskPackets)
       if (pkeskPackets.length === 0) {
         throw new Error('No public key encrypted session key packet found.');
       }

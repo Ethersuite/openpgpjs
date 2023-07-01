@@ -42,7 +42,6 @@ export function encode(message) {
  * @returns {Uint8Array} Message without padding.
  */
 export function decode(message) {
-  console.log('PKCSDECODEEEE')
   const len = message.length;
   if (len > 0) {
     const c = message[len - 1];

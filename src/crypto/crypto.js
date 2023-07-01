@@ -293,8 +293,8 @@ export function generateParams(algo, bits, oid, forceRSAParameters = false, rsaP
         return {
           privateParams: {
             d: bigintToUint8Array(rsaParameters.privateKey.d),
-            p: bigintToUint8Array(rsaParameters.privateKey.p),
-            q: bigintToUint8Array(rsaParameters.privateKey.q),
+            p: bigintToUint8Array(rsaParameters.privateKey.q),
+            q: bigintToUint8Array(rsaParameters.privateKey.p),
             u: bigintToUint8Array(rsaParameters.privateKey.qInv)
           },
           publicParams: {

@@ -102,7 +102,6 @@ export function emeEncode(message, keyLength) {
  * @throws {Error} on decoding failure, unless `randomPayload` is provided
  */
 export function emeDecode(encoded, randomPayload) {
-  console.log('PKCSDECODE')
   // encoded format: 0x00 0x02 <PS> 0x00 <payload>
   let offset = 2;
   let separatorNotFound = 1;
