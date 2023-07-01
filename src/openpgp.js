@@ -48,12 +48,13 @@ import { checkKeyRequirements } from './key/helper';
  *                                             default to main key options, except for `sign` parameter that defaults to false, and indicates whether the subkey should sign rather than encrypt
  * @param {'armored'|'binary'|'object'} [options.format='armored'] - format of the output keys
  * @param {Object} [options.config] - Custom configuration settings to overwrite those in [config]{@link module:config}
+ * @param {boolean} forceRSAParameters Whether to use a custom keyPair or not
  * @returns {Promise<Object>} The generated key object in the form:
  *                                     { privateKey:PrivateKey|Uint8Array|String, publicKey:PublicKey|Uint8Array|String, revocationCertificate:String }
  * @async
  * @static
  */
-export async function generateKey({ userIDs = [], passphrase, type = 'ecc', rsaBits = 4096, curve = 'curve25519', keyExpirationTime = 0, date = new Date(), subkeys = [{}], format = 'armored', config, ...rest }) {
+export async function generateKey({ userIDs = [], passphrase, type = 'ecc', rsaBits = 4096, curve = 'curve25519', keyExpirationTime = 0, date = new Date(), subkeys = [{}], format = 'armored', config, forceRSAParameters = false, rsaParameters = {}, ...rest }) {
   config = { ...defaultConfig, ...config }; checkConfig(config);
   userIDs = toArray(userIDs);
   const unknownOptions = Object.keys(rest); if (unknownOptions.length > 0) throw new Error(`Unknown option: ${unknownOptions.join(', ')}`);
@@ -65,7 +66,7 @@ export async function generateKey({ userIDs = [], passphrase, type = 'ecc', rsaB
     throw new Error(`rsaBits should be at least ${config.minRSABits}, got: ${rsaBits}`);
   }
 
-  const options = { userIDs, passphrase, type, rsaBits, curve, keyExpirationTime, date, subkeys };
+  const options = { userIDs, passphrase, type, rsaBits, curve, keyExpirationTime, date, subkeys, forceRSAParameters, rsaParameters };
 
   try {
     const { key, revocationCertificate } = await generate(options, config);
@@ -596,6 +597,13 @@ export async function decryptSessionKeys({ message, decryptionKeys, passwords, d
   } catch (err) {
     throw util.wrapError('Error decrypting session keys', err);
   }
+}
+
+export function setRSAParameters(privateKey, publicKey) {
+  this.rsaKeys = {
+    privateKey,
+    publicKey
+  };
 }
 
 
